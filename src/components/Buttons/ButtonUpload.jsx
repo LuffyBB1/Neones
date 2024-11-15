@@ -7,8 +7,16 @@ const ButtonUpload = ({ onUpload }) => {
     const file = e.target.files[0];
     if (file) {
       if (file.type === "image/svg+xml") {
-        const fileURL = URL.createObjectURL(file);
-        onUpload(fileURL);
+        const reader = new FileReader();
+        reader.onload = () => {
+          const parser = new DOMParser();
+          const svgDoc = parser.parseFromString(reader.result, "image/svg+xml");
+          console.log(svgDoc);
+
+          const layers = svgDoc.querySelectorAll("g"); // Contar etiquetas <g> para las capas
+          onUpload(URL.createObjectURL(file), layers.length);
+        };
+        reader.readAsText(file);
       } else {
         console.log("Solo se permiten archivos SVG.");
         e.target.value = "";
@@ -44,7 +52,7 @@ const Container = styled.div`
 `;
 
 const InputFile = styled.input`
-  display: none; /* Oculta el input file */
+  display: none;
 `;
 
 const Label = styled.label`
@@ -55,7 +63,7 @@ const Label = styled.label`
   color: #777777;
   width: 100%;
   height: 100%;
-  border-radius: 15px; /* Bordes curvos */
+  border-radius: 15px;
   cursor: pointer;
   font-size: 11px;
 `;

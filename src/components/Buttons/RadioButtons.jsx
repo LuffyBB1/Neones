@@ -45,7 +45,7 @@ const Container = styled.div`
 const Label = styled.label`
   display: flex;
   align-items: center;
-  justify-content: center; /* Centrar el texto dentro del label */
+  justify-content: center;
   margin-bottom: 10px;
   font-size: 11px;
   color: #777777;
@@ -61,8 +61,8 @@ const Label = styled.label`
 
 const StyledRadio = styled.input`
   position: absolute;
-  opacity: 0; /* Ocultar el botón de radio */
-  pointer-events: none; /* Asegurar que no interfiera con el clic */
+  opacity: 0; 
+  pointer-events: none; 
   
 
   &:focus {

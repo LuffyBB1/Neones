@@ -1,17 +1,16 @@
-import React, { useState, useRef } from 'react';
-import { Stage, Layer, Text, Line } from 'react-konva';
-import styled from 'styled-components';
-import Canvas from './components/Canvas/Canvas';
-
+import React from "react";
+import styled from "styled-components";
+import Canvas from "./components/Canvas/Canvas";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 export default function CanvasEditor() {
-
   return (
     <Container>
       <h1>Crea el tuyo ahora!</h1>
-      <Canvas/>
+      <Canvas />
     </Container>
-  )
+  );
 }
 
 const Container = styled.div`
