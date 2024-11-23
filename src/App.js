@@ -1,8 +1,6 @@
 import React from "react";
 import styled from "styled-components";
 import Canvas from "./components/Canvas/Canvas";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
 
 export default function CanvasEditor() {
   return (
@@ -18,6 +16,5 @@ const Container = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100vh;
   font-family: Arial, sans-serif;
 `;
