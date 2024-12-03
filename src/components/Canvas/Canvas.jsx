@@ -1,128 +1,37 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Stage, Layer, Text, Image as KonvaImage, Transformer } from 'react-konva';
+import { Stage, Layer, Text, Image as KonvaImage, Transformer, Rect, Group } from 'react-konva';
 import { Html } from 'react-konva-utils';
-import styled from 'styled-components';
+import {  Container,  Column,  ConfigSection,  Groups,  CarouselWrapper,  SliderContainer,  ThumbnailWrapper,  DeleteButton,  ThumbnailContainer,  Thumbnail,
+  UploadButton,  PlusIcon,  Button,  StyledInput,  ColorSelection,  ColorButton,  ImageCarousel,  TextArea,
+  SelectFont,  SelectNumber, ButtonEliminarTexto} from './Canvas.styles.js';
 import useImage from 'use-image';
-// import { X } from 'lucide-react';
 import Label from '../Label/Label';
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import RadioButtons from '../Buttons/RadioButtons';
-import Pared1 from '../../assets/images/fondo1.jpeg';
-import Pared2 from '../../assets/images/fondo2.jpeg';
-import Pared3 from '../../assets/images/fondo3.jpeg';
-import Pared4 from '../../assets/images/fondo4.jpeg';
-import Pared5 from '../../assets/images/fondo5.jpeg';
-import Pared6 from '../../assets/images/fondo6.jpeg';
-import Pared7 from '../../assets/images/fondo7.jpeg';
+import { contentTypeOptions, NEON_COLORS, NEON_FONTS, cutOptions, suportOptions, useOptions, defaultBackgroundImages, FONT_SIZES } from '../../constants/options';
 
 
 const CANVAS_WIDTH = 600;
-const CANVAS_HEIGHT = 600;
-
-
-const contentTypeOptions = [
-  { value: "text", label: "ESCRIBE UN TEXTO" },
-  { value: "image", label: "SUBIR ARCHIVO" }
-];
-
-const NEON_COLORS = [
-  {
-    value: '#ff3333',
-    label: 'Rojo Neón',
-    glow: ['#ff000033', '#ff0000aa', '#ff0000'],
-  },
-  {
-    value: '#33ff33',
-    label: 'Verde Neón',
-    glow: ['#00ff0033', '#00ff00aa', '#00ff00'],
-  },
-  {
-    value: '#3333ff',
-    label: 'Azul Neón',
-    glow: ['#0000ff33', '#0000ffaa', '#0000ff'],
-  },
-  {
-    value: '#ff33ff',
-    label: 'Rosa Neón',
-    glow: ['#ff00ff33', '#ff00ffaa', '#ff00ff'],
-  },
-  {
-    value: '#ffff33',
-    label: 'Amarillo Neón',
-    glow: ['#ffff0033', '#ffff00aa', '#ffff00'],
-  },
-];
-
-const NEON_FONTS = [
-  {
-    value: "Imperial Script",
-    label: "Imperial Script",
-    url: 'https://fonts.googleapis.com/css2?family=Freehand&family=Imperial+Script&family=New+Amsterdam&display=swap'
-  },
-  {
-    value: "League Script",
-    label: "League Script",
-    url: 'https://fonts.googleapis.com/css2?family=Freehand&family=Imperial+Script&family=League+Script&family=New+Amsterdam&display=swap'
-  },
-  {
-    value: "Freehand",
-    label: "Freehand",
-    url: 'https://fonts.googleapis.com/css2?family=Freehand&family=Imperial+Script&family=League+Script&family=New+Amsterdam&display=swap'
-  },
-  {
-    value: "Pattaya",
-    label: "Pattaya",
-    url: 'https://fonts.googleapis.com/css2?family=Freehand&family=Imperial+Script&family=League+Script&family=New+Amsterdam&family=Pattaya&display=swap'
-  },
-  {
-    value: "Neonderthaw",
-    label: "Neonderthaw",
-    url: 'https://fonts.googleapis.com/css2?family=Freehand&family=Imperial+Script&family=League+Script&family=Neonderthaw&family=New+Amsterdam&family=Pattaya&display=swap'
-  },
-  {
-    value: "Pirata One",
-    label: "Pirata One",
-    url: 'https://fonts.googleapis.com/css2?family=Freehand&family=Imperial+Script&family=League+Script&family=Neonderthaw&family=New+Amsterdam&family=Pattaya&family=Pirata+One&display=swap'
-  },
-];
-
-
-const cutOptions = [
-  { value: "option1", label: "RECTANGULAR" },
-  { value: "option2", label: "RECTANGULAR CON BORDES" },
-  { value: "option3", label: "CIRCULAR" },
-  { value: "option4", label: "SILUETA" }
-];
-
-const suportOptions = [
-  { value: "option1", label: "SIN SOPORTE" },
-  { value: "option2", label: "CON TORNILLOS" },
-  { value: "option3", label: "COLGADO" },
-  { value: "option4", label: "CON PATAS" }
-];
-
-const useOptions = [
-  { value: "option1", label: "INTERIOR" },
-  { value: "option2", label: "EXTERIOR (PROTECCIÓN)" }
-];
-
-const defaultBackgroundImages = [
-  { src: Pared2, label: 'Fondo 2' },
-  { src: Pared1, label: 'Fondo 1' },
-  { src: Pared3, label: 'Fondo 3' },
-  { src: Pared4, label: 'Fondo 4' },
-  { src: Pared5, label: 'Fondo 5' },
-  { src: Pared6, label: 'Fondo 6' },
-  { src: Pared7, label: 'Fondo 7' },
-];
+const CANVAS_HEIGHT = 800;
 
 const Canvas = () => {
   const [contentType, setContentType] = useState('text');
-  const [customText, setCustomText] = useState('');
-  const [selectedFont, setSelectedFont] = useState(NEON_FONTS[0].value);
-  const [selectedColor, setSelectedColor] = useState(NEON_COLORS[0].value);
+  const [texts, setTexts] = useState([
+    {
+      id: Date.now(), // ID único para el texto inicial
+      text: 'ESCRIBE TU NEÓN',
+      x: CANVAS_WIDTH / 2 - 250,
+      y: CANVAS_HEIGHT / 2 - 50,
+      fontFamily: NEON_FONTS[5].value,
+      color: NEON_COLORS[2].value,
+      fontSize: 60,
+      offsetX: 0, // Se calculará dinámicamente más adelante
+      offsetY: 0, // Se calculará dinámicamente más adelante
+    },
+  ]); // Reemplaza customText
+  const [selectedTextId, setSelectedTextId] = useState(texts[0]?.id || null);
   const [backgroundSrc, setBackgroundSrc] = useState(defaultBackgroundImages[0].src);
   const [uploadedImageSrc, setUploadedImageSrc] = useState(null);
   const [backgroundImage] = useImage(backgroundSrc);
@@ -130,11 +39,11 @@ const Canvas = () => {
   const [uploadedImages, setUploadedImages] = useState([]);
   const [backgroundImages, setBackgroundImages] = useState([...defaultBackgroundImages]);
   const [description, setDescription] = useState('');
-  const [fontLoaded, setFontLoaded] = useState(false)
-
-
-  const imageRef = useRef(null);
+  const [fontLoaded, setFontLoaded] = useState(false);
+  const textRefs = useRef({});
   const transformerRef = useRef(null);
+  const imageRef = useRef(null);
+
 
   const carouselSettings = {
     dots: false,
@@ -166,6 +75,53 @@ const Canvas = () => {
     ]
   };
 
+  const calculateCoverImage = (canvasWidth, canvasHeight, imageWidth, imageHeight) => {
+    const canvasRatio = canvasWidth / canvasHeight;
+    const imageRatio = imageWidth / imageHeight;
+  
+    let width, height;
+  
+    if (canvasRatio > imageRatio) {
+      // Canvas es más ancho que la imagen
+      width = canvasWidth;
+      height = canvasWidth / imageRatio;
+    } else {
+      // Canvas es más alto que la imagen
+      width = canvasHeight * imageRatio;
+      height = canvasHeight;
+    }
+  
+    return {
+      width,
+      height,
+      offsetX: width / 2,
+      offsetY: height / 2,
+    };
+  };
+
+  const renderBackground = () => {
+    if (!backgroundImage) return null;
+  
+    const { width, height, offsetX, offsetY } = calculateCoverImage(
+      CANVAS_WIDTH,
+      CANVAS_HEIGHT,
+      backgroundImage.width,
+      backgroundImage.height
+    );
+  
+    return (
+      <KonvaImage
+        image={backgroundImage}
+        width={width}
+        height={height}
+        x={CANVAS_WIDTH / 2}
+        y={CANVAS_HEIGHT / 2}
+        offsetX={offsetX}
+        offsetY={offsetY}
+      />
+    );
+  };
+
   const [imageAttrs, setImageAttrs] = useState({
     x: CANVAS_WIDTH / 2 - 50,
     y: CANVAS_HEIGHT / 2 - 50,
@@ -178,9 +134,9 @@ const Canvas = () => {
 
   const handleContentTypeChange = (value) => {
     setContentType(value);
-    setCustomText('');
+    // setTexts([]);
     setUploadedImageSrc(null);
-    setDescription('');
+    //setDescription('');
   };
 
   const handleImageUpload = (event) => {
@@ -242,58 +198,171 @@ const Canvas = () => {
     node.scale({ x: 1, y: 1 });
   };
 
-  const getSelectedNeonColor = () => {
-    return NEON_COLORS.find(color => color.value === selectedColor) || NEON_COLORS[0];
+  // Función para agregar un nuevo texto
+  const addText = () => {
+    const newText = {
+      id: Date.now(),
+      text: 'Ingrese aquí su texto',
+      x: CANVAS_WIDTH / 2 - 250,
+      y: CANVAS_HEIGHT / 2 - 50,
+      fontFamily: NEON_FONTS[0].value,
+      color: NEON_COLORS[0].value,
+      fontSize: 40,
+      offsetX: 0, 
+      offsetY: 0, 
+    };
+    setTexts(prev => [...prev, newText]);
+    setSelectedTextId(newText.id);
   };
 
-  const renderNeonText = () => {
-    if (!customText || !fontLoaded) return null;
+  // Función para manejar la selección del texto
+  const handleTextClick = (id) => {
+    setSelectedTextId(id);
+  };
 
-    const neonColor = getSelectedNeonColor();
-    const textConfig = {
-      text: customText,
-      x: CANVAS_WIDTH / 1.5,
-      y: CANVAS_HEIGHT / 2,
-      fontSize: 40,
-      fontFamily: selectedFont,
-      align: 'center',
-      draggable: false,
-      offsetX: customText.length * 10,
-      offsetY: 20,
-    };
-
-    return (
-      <>
-        {/* Capa de resplandor exterior */}
-        <Text
-          {...textConfig}
-          fill={neonColor.glow[0]}
-          shadowColor={neonColor.glow[0]}
-          shadowBlur={40}
-          shadowOffset={{ x: 0, y: 0 }}
-          opacity={0.8}
-        />
-        {/* Capa de resplandor medio */}
-        <Text
-          {...textConfig}
-          fill={neonColor.glow[1]}
-          shadowColor={neonColor.glow[1]}
-          shadowBlur={25}
-          shadowOffset={{ x: 0, y: 0 }}
-          opacity={0.9}
-        />
-        {/* Capa de texto principal */}
-        <Text
-          {...textConfig}
-          fill={neonColor.value}
-          shadowColor={neonColor.glow[2]}
-          shadowBlur={10}
-          shadowOffset={{ x: 0, y: 0 }}
-          opacity={1}
-        />
-      </>
+  // Funciones para manejar los cambios en el texto seleccionado
+  const handleTextChange = (id, newText) => {
+    setTexts(prev =>
+      prev.map(text =>
+        text.id === id ? { ...text, text: newText } : text
+      )
     );
   };
+
+
+
+  const handleFontChange = (id, newFont) => {
+    setTexts(prev =>
+      prev.map(text =>
+        text.id === id ? { ...text, fontFamily: newFont } : text
+      )
+    );
+  };
+
+  const handleColorChange = (id, newColor) => {
+    setTexts(prev =>
+      prev.map(text =>
+        text.id === id ? { ...text, color: newColor } : text
+      )
+    );
+  };
+
+  const handleFontSizeChange = (id, newSize) => {
+    setTexts((prev) =>
+      prev.map((text) =>
+        text.id === id ? { ...text, fontSize: newSize } : text
+      )
+    );
+  };
+
+  const handleDeleteText = (id) => {
+    setTexts((prev) => prev.filter((text) => text.id !== id));
+    setSelectedTextId(null); // Deselecciona el texto eliminado
+  };
+
+  const renderNeonTexts = () => {
+    if (!fontLoaded) return null;
+
+    return texts.map((textObj) => {
+      const neonColor = NEON_COLORS.find(color => color.value === textObj.color) || NEON_COLORS[0];
+
+      // Crear una referencia para este texto si no existe
+      if (!textRefs.current[textObj.id]) {
+        textRefs.current[textObj.id] = React.createRef();
+      }
+
+      const groupRef = textRefs.current[textObj.id];
+      const textConfig = {
+        text: textObj.text,
+        x: textObj.x,
+        y: textObj.y,
+        fontSize: textObj.fontSize,
+        fontFamily: textObj.fontFamily,
+        align: 'center',
+        draggable: true,
+        wrap: 'word',
+        width: CANVAS_WIDTH - 40, // Ajusta el ancho disponible
+      };
+
+      const handleDragMoveText = (e) => {
+        const { x, y } = e.target.position();
+        setTexts(prev =>
+          prev.map(text =>
+            text.id === textObj.id ? { ...text, x, y } : text
+          )
+        );
+      };
+
+      return (
+        <Group
+          key={textObj.id}
+          ref={groupRef}
+          onDragMove={handleDragMoveText}
+          onClick={() => handleTextClick(textObj.id)}
+          draggable
+        >
+          {/* Rectángulo como borde */}
+        
+          {/* Capa de resplandor exterior */}
+          <Text
+            {...textConfig}
+            fill={neonColor.glow[0]}
+            shadowColor={neonColor.glow[0]}
+            shadowBlur={40}
+            shadowOffset={{ x: 0, y: 0 }}
+            opacity={0.8}
+          />
+          {/* Capa de resplandor medio */}
+          <Text
+            {...textConfig}
+            fill={neonColor.glow[1]}
+            shadowColor={neonColor.glow[1]}
+            shadowBlur={25}
+            shadowOffset={{ x: 0, y: 0 }}
+            opacity={0.9}
+          />
+          {/* Capa de texto principal */}
+          <Text
+            {...textConfig}
+            fill={neonColor.value}
+            shadowColor={neonColor.glow[2]}
+            shadowBlur={10}
+            shadowOffset={{ x: 0, y: 0 }}
+            opacity={1}
+          />
+
+          {/* Ícono de basura (aparece solo si el texto está seleccionado) */}
+          {selectedTextId === textObj.id && (
+            <Text
+              text="🗑️" // Usa un emoji o un ícono SVG si prefieres
+              x={textObj.x + 50} // Ajusta la posición al lado del texto
+              y={textObj.y - 20}
+              fontSize={20}
+              onClick={(e) => {
+                e.cancelBubble = true; // Evita que el clic deseleccione el texto
+                handleDeleteText(textObj.id);
+              }}
+              fill="red"
+              cursor="pointer"
+            />
+          
+            
+          )}
+        </Group>
+      );
+    });
+  };
+
+  // useEffect para actualizar el Transformer cuando cambia el texto seleccionado
+  useEffect(() => {
+    if (selectedTextId && transformerRef.current) {
+      const selectedNode = textRefs.current[selectedTextId];
+      if (selectedNode) {
+        transformerRef.current.nodes([selectedNode]);
+        transformerRef.current.getLayer().batchDraw();
+      }
+    }
+  }, [selectedTextId, texts]);
 
   useEffect(() => {
     const loadFonts = async () => {
@@ -330,13 +399,7 @@ const Canvas = () => {
       <Column>
         <Stage width={CANVAS_WIDTH} height={CANVAS_HEIGHT} style={{ borderRadius: '10px', overflow: 'hidden' }}>
           <Layer>
-            {backgroundImage && (
-              <KonvaImage
-                image={backgroundImage}
-                width={CANVAS_WIDTH}
-                height={CANVAS_HEIGHT}
-              />
-            )}
+          {renderBackground()}
             <Html
               divProps={{
                 style: {
@@ -371,10 +434,15 @@ const Canvas = () => {
                 </SliderContainer>
               </CarouselWrapper>
             </Html>
-
           </Layer>
           <Layer>
-            {contentType === 'text' && renderNeonText()}
+          <Rect
+              width={CANVAS_WIDTH}
+              height={CANVAS_HEIGHT}
+              fill="transparent" // Mantén el fondo transparente
+              onClick={() => setSelectedTextId(null)} // Deseleccionar texto al hacer clic
+            />
+            {contentType === 'text' && renderNeonTexts()}
             {contentType === 'image' && uploadedImage && (
               <>
                 <KonvaImage
@@ -413,46 +481,91 @@ const Canvas = () => {
             onChange={handleContentTypeChange}
           />
         </ConfigSection>
-        <ConfigSection>
-          <Label title={'CAPAS'} />
-          {contentType === 'text' ? (
-            <div>
-              <StyledInput
-                type="text"
-                placeholder="ESCRIBE UN TEXTO..."
-                value={customText}
-                onChange={(e) => setCustomText(e.target.value)}
-              />
-              <ConfigSection>
-                <Label title={'SELECCIONAR FUENTE'} />
-                <Select
-                  onChange={(e) => setSelectedFont(e.target.value)}
-                  value={selectedFont}
-                  style={{ fontFamily: selectedFont }}
-                >
-                  {NEON_FONTS.map(font => (
-                    <option
-                      key={font.value}
-                      value={font.value}
-                      style={{ fontFamily: font.value }}
+        {contentType === 'text' && (
+          <ConfigSection>
+            {/* Mostrar los inputs para el texto seleccionado */}
+            {selectedTextId && (
+              <div>
+                <Label title={'ESCRIBE TU TEXTO'} />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <StyledInput
+                  type="text"
+                  //placeholder="Escribe tu texto..."
+                  value={texts.find(text => text.id === selectedTextId)?.text || ''}
+                  onChange={(e) => handleTextChange(selectedTextId, e.target.value)}
+                  style={{ // Permite que el input ocupe el espacio restante
+                    height: '44px', // Asegura que la altura coincida con el botón
+                  }}
+
+                />
+                <ButtonEliminarTexto onClick={() => handleDeleteText(selectedTextId)}>
+                  Eliminar Texto
+                </ButtonEliminarTexto>
+                </div>
+                <ConfigSection>
+                  <Label title={'SELECCIONAR FUENTE'} />
+                  <SelectFont
+                    onChange={(e) => handleFontChange(selectedTextId, e.target.value)}
+                    value={texts.find(text => text.id === selectedTextId)?.fontFamily || NEON_FONTS[0].value}
+                    style={{ fontFamily: texts.find(text => text.id === selectedTextId)?.fontFamily }}
+                  >
+                    {NEON_FONTS.map(font => (
+                      <option
+                        key={font.value}
+                        value={font.value}
+                        style={{ fontFamily: font.value }}
+                      >
+                        {font.label}
+                      </option>
+                    ))}
+                  </SelectFont>
+                </ConfigSection>
+                <ConfigSection>
+                  <Label title={'TAMAÑO DE FUENTE'} />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    {/* Campo de entrada manual */}
+                    <StyledInput
+                      type="number"
+                      min="8"
+                      max="100"
+                      step="1"
+                      value={texts.find(text => text.id === selectedTextId)?.fontSize || 40}
+                      onChange={(e) => handleFontSizeChange(selectedTextId, parseInt(e.target.value, 10))}
+                      style={{ width: '60px' }}
+                    />
+
+                    {/* Selector de valores comunes */}
+                    <SelectNumber
+                      value={texts.find(text => text.id === selectedTextId)?.fontSize || ''}
+                      onChange={(e) => handleFontSizeChange(selectedTextId, parseInt(e.target.value, 10))}
                     >
-                      {font.label}
-                    </option>
+                      <option value="">Seleccionar</option>
+                      {FONT_SIZES.map(size => (
+                        <option key={size} value={size}>
+                          {size}
+                        </option>
+                      ))}
+                    </SelectNumber>
+                  </div>
+                </ConfigSection>
+                <ColorSelection>
+                  {NEON_COLORS.map(color => (
+                    <ColorButton
+                      key={color.value}
+                      color={color.value}
+                      selected={texts.find(text => text.id === selectedTextId)?.color === color.value}
+                      onClick={() => handleColorChange(selectedTextId, color.value)}
+                    />
                   ))}
-                </Select>
-              </ConfigSection>
-              <ColorSelection>
-                {NEON_COLORS.map(color => (
-                  <ColorButton
-                    key={color.value}
-                    color={color.value}
-                    selected={selectedColor === color.value}
-                    onClick={() => setSelectedColor(color.value)}
-                  />
-                ))}
-              </ColorSelection>
-            </div>
-          ) : (
+                </ColorSelection>
+              </div>
+            )}
+            <Button onClick={addText}>Agregar Nuevo Texto</Button>
+          </ConfigSection>
+        )}
+        
+        {contentType === 'image' && (
+          <ConfigSection>
             <ImageCarousel>
               {uploadedImages.length < 4 && (
                 <UploadButton>
@@ -474,19 +587,17 @@ const Canvas = () => {
                 </ThumbnailWrapper>
               ))}
             </ImageCarousel>
-          )}
-        </ConfigSection>
-
-        {contentType === 'image' && (
-          <ConfigSection>
-            <Label title={'DESCRIPCIÓN'} />
-            <TextArea
-              placeholder="Añade una descripción..."
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
+            <ConfigSection>
+              <Label title={'DESCRIPCIÓN'} />
+              <TextArea
+                placeholder="Añade una descripción..."
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+            </ConfigSection>
           </ConfigSection>
         )}
+        {/* Resto de las configuraciones */}
         <ConfigSection>
           <Label title={'TAMAÑO'} />
           <Groups>
@@ -529,221 +640,3 @@ const Canvas = () => {
 
 export default Canvas;
 
-// Estilos con styled-components
-
-const Container = styled.div`
-  display: flex;
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  font-family: Arial, sans-serif;
-`;
-
-const Column = styled.div`
-  flex: 1;
-  padding: 20px;
-`;
-
-const ConfigSection = styled.div`
-  margin-bottom: 20px;
-`;
-
-const Groups = styled.div`
-  display: flex;
-  justify-content: space-between;
-  gap: 15px;
-`;
-
-const CarouselWrapper = styled.div`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const SliderContainer = styled.div`
-  width: 100%;
-  padding: 10px;
-
-  .slick-slider {
-    margin: 0;
-  }
-
-  .slick-list {
-    margin: 0 -5px;
-  }
-
-  .slick-slide {
-    padding: 0 5px;
-    
-    & > div {
-      display: flex;
-      justify-content: center;
-    }
-  }
-
-  .slick-track {
-    display: flex;
-    align-items: center;
-    margin-left: 0;
-  }
-`;
-
-const ThumbnailWrapper = styled.div`
-  position: relative;
-  width: 80px;
-  height: 80px;
-`;
-
-const DeleteButton = styled.button`
-  position: absolute;
-  top: -8px;
-  right: -8px;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background-color: #E30613;
-  border: none;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  padding: 0;
-  transition: background-color 0.3s;
-
-  &:hover {
-    background-color: #ff0000;
-  }
-`;
-
-const ThumbnailContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  width: 90px;
-  padding: 5px;
-  outline: none;
-`;
-
-const Thumbnail = styled.img`
-  width: 80px;
-  height: 80px;
-  object-fit: cover;
-  cursor: pointer;
-  border: ${props => (props.selected ? "2px solid #BC13FE" : "2px solid transparent")};
-  border-radius: 5px;
-  transition: border-color 0.3s;
-`;
-
-const UploadButton = styled.label`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 80px;
-  height: 80px;
-  border: 2px dashed #ccc;
-  border-radius: 5px;
-  cursor: pointer;
-  background-color: #f5f5f5;
-
-  input {
-    display: none;
-  }
-`;
-
-const PlusIcon = styled.span`
-  font-size: 24px;
-  color: #666;
-`;
-
-const Button = styled.button`
-  background-color: #E30613;
-  width: 100%;
-  height: 50px;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-`;
-
-
-const StyledInput = styled.input`
-  display: flex;
-  text-align: center;
-  border-radius: 15px;
-  font-size: 11px;
-  border: 2px solid transparent;
-  transition: border-color 0.3s, box-shadow 0.3s;
-  background-color: #ececec;
-  width: 50%;
-  height: 44px;
-  outline: none;
-
-  &:focus {
-    border-color: #E30613;
-  }
-`;
-
-const Select = styled.select`
-  width: 100%;
-  height: 44px;
-  margin-top: 10px;
-  border-radius: 15px;
-  border: none;
-  background-color: #ececec;
-  padding: 0 15px;
-  outline: none;
-  cursor: pointer;
-  font-size: 16px;
-
-  option {
-    padding: 10px;
-    font-size: 16px;
-  }
-`;
-
-const ColorSelection = styled.div`
-  display: flex;
-  gap: 10px;
-  margin-top: 10px;
-`;
-
-const ColorButton = styled.button`
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 3px solid ${props => props.selected ? '#ffffff' : 'transparent'};
-  background-color: ${props => props.color};
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: ${props => props.selected ? `0 0 15px ${props.color}` : 'none'};
-
-  &:hover {
-    box-shadow: 0 0 15px ${props => props.color};
-    transform: scale(1.1);
-  }
-`;
-
-const ImageCarousel = styled.div`
-  display: flex;
-  gap: 10px;
-  overflow-x: auto;
-  padding: 10px 0;
-`;
-
-const TextArea = styled.textarea`
-  width: 100%;
-  height: 100px;
-  border-radius: 15px;
-  border: none;
-  background-color: #ececec;
-  padding: 15px;
-  resize: none;
-  outline: none;
-  font-family: inherit;
-
-  &:focus {
-    border-color: #E30613;
-  }
-`;
