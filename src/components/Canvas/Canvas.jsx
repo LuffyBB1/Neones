@@ -1,9 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Stage, Layer, Text, Image as KonvaImage, Transformer, Rect, Group } from 'react-konva';
 import { Html } from 'react-konva-utils';
-import {  Container,  Column,  ConfigSection,  Groups,  CarouselWrapper,  SliderContainer,  ThumbnailWrapper,  DeleteButton,  ThumbnailContainer,  Thumbnail,
-  UploadButton,  PlusIcon,  Button,  StyledInput,  ColorSelection,  ColorButton,  ImageCarousel,  TextArea,
-  SelectFont,  SelectNumber, ButtonEliminarTexto} from './Canvas.styles.js';
+import {
+  Container, Column, ConfigSection, Groups, CarouselWrapper, SliderContainer, ThumbnailWrapper, DeleteButton, ThumbnailContainer, Thumbnail,
+  UploadButton, PlusIcon, Button, StyledInput, ColorSelection, ColorButton, ImageCarousel, TextArea,
+  SelectFont, SelectNumber, ButtonEliminarTexto
+} from './Canvas.styles.js';
 import useImage from 'use-image';
 import Label from '../Label/Label';
 import Slider from "react-slick";
@@ -11,6 +13,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import RadioButtons from '../Buttons/RadioButtons';
 import { contentTypeOptions, NEON_COLORS, NEON_FONTS, cutOptions, suportOptions, useOptions, defaultBackgroundImages, FONT_SIZES } from '../../constants/options';
+import PurchaseForm from '../Forms/PurchaseForm.jsx';
 
 
 const CANVAS_WIDTH = 600;
@@ -39,6 +42,7 @@ const Canvas = () => {
   const [uploadedImages, setUploadedImages] = useState([]);
   const [backgroundImages, setBackgroundImages] = useState([...defaultBackgroundImages]);
   const [description, setDescription] = useState('');
+  const [changeForm, setChangeForm] = useState(false);
   const [fontLoaded, setFontLoaded] = useState(false);
   const textRefs = useRef({});
   const transformerRef = useRef(null);
@@ -78,9 +82,9 @@ const Canvas = () => {
   const calculateCoverImage = (canvasWidth, canvasHeight, imageWidth, imageHeight) => {
     const canvasRatio = canvasWidth / canvasHeight;
     const imageRatio = imageWidth / imageHeight;
-  
+
     let width, height;
-  
+
     if (canvasRatio > imageRatio) {
       // Canvas es más ancho que la imagen
       width = canvasWidth;
@@ -90,7 +94,7 @@ const Canvas = () => {
       width = canvasHeight * imageRatio;
       height = canvasHeight;
     }
-  
+
     return {
       width,
       height,
@@ -101,14 +105,14 @@ const Canvas = () => {
 
   const renderBackground = () => {
     if (!backgroundImage) return null;
-  
+
     const { width, height, offsetX, offsetY } = calculateCoverImage(
       CANVAS_WIDTH,
       CANVAS_HEIGHT,
       backgroundImage.width,
       backgroundImage.height
     );
-  
+
     return (
       <KonvaImage
         image={backgroundImage}
@@ -208,8 +212,8 @@ const Canvas = () => {
       fontFamily: NEON_FONTS[0].value,
       color: NEON_COLORS[0].value,
       fontSize: 40,
-      offsetX: 0, 
-      offsetY: 0, 
+      offsetX: 0,
+      offsetY: 0,
     };
     setTexts(prev => [...prev, newText]);
     setSelectedTextId(newText.id);
@@ -302,7 +306,7 @@ const Canvas = () => {
           draggable
         >
           {/* Rectángulo como borde */}
-        
+
           {/* Capa de resplandor exterior */}
           <Text
             {...textConfig}
@@ -345,8 +349,8 @@ const Canvas = () => {
               fill="red"
               cursor="pointer"
             />
-          
-            
+
+
           )}
         </Group>
       );
@@ -399,7 +403,7 @@ const Canvas = () => {
       <Column>
         <Stage width={CANVAS_WIDTH} height={CANVAS_HEIGHT} style={{ borderRadius: '10px', overflow: 'hidden' }}>
           <Layer>
-          {renderBackground()}
+            {renderBackground()}
             <Html
               divProps={{
                 style: {
@@ -436,7 +440,7 @@ const Canvas = () => {
             </Html>
           </Layer>
           <Layer>
-          <Rect
+            <Rect
               width={CANVAS_WIDTH}
               height={CANVAS_HEIGHT}
               fill="transparent" // Mantén el fondo transparente
@@ -472,167 +476,173 @@ const Canvas = () => {
           </Layer>
         </Stage>
       </Column>
-      <Column>
-        <ConfigSection>
-          <Label title={'SVG - TEXTO'} />
-          <RadioButtons
-            options={contentTypeOptions}
-            name="contentType"
-            onChange={handleContentTypeChange}
-          />
-        </ConfigSection>
-        {contentType === 'text' && (
-          <ConfigSection>
-            {/* Mostrar los inputs para el texto seleccionado */}
-            {selectedTextId && (
-              <div>
-                <Label title={'ESCRIBE TU TEXTO'} />
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <StyledInput
-                  type="text"
-                  //placeholder="Escribe tu texto..."
-                  value={texts.find(text => text.id === selectedTextId)?.text || ''}
-                  onChange={(e) => handleTextChange(selectedTextId, e.target.value)}
-                  style={{ // Permite que el input ocupe el espacio restante
-                    height: '44px', // Asegura que la altura coincida con el botón
-                  }}
-
-                />
-                <ButtonEliminarTexto onClick={() => handleDeleteText(selectedTextId)}>
-                  Eliminar Texto
-                </ButtonEliminarTexto>
-                </div>
-                <ConfigSection>
-                  <Label title={'SELECCIONAR FUENTE'} />
-                  <SelectFont
-                    onChange={(e) => handleFontChange(selectedTextId, e.target.value)}
-                    value={texts.find(text => text.id === selectedTextId)?.fontFamily || NEON_FONTS[0].value}
-                    style={{ fontFamily: texts.find(text => text.id === selectedTextId)?.fontFamily }}
-                  >
-                    {NEON_FONTS.map(font => (
-                      <option
-                        key={font.value}
-                        value={font.value}
-                        style={{ fontFamily: font.value }}
-                      >
-                        {font.label}
-                      </option>
-                    ))}
-                  </SelectFont>
-                </ConfigSection>
-                <ConfigSection>
-                  <Label title={'TAMAÑO DE FUENTE'} />
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    {/* Campo de entrada manual */}
-                    <StyledInput
-                      type="number"
-                      min="8"
-                      max="100"
-                      step="1"
-                      value={texts.find(text => text.id === selectedTextId)?.fontSize || 40}
-                      onChange={(e) => handleFontSizeChange(selectedTextId, parseInt(e.target.value, 10))}
-                      style={{ width: '60px' }}
-                    />
-
-                    {/* Selector de valores comunes */}
-                    <SelectNumber
-                      value={texts.find(text => text.id === selectedTextId)?.fontSize || ''}
-                      onChange={(e) => handleFontSizeChange(selectedTextId, parseInt(e.target.value, 10))}
-                    >
-                      <option value="">Seleccionar</option>
-                      {FONT_SIZES.map(size => (
-                        <option key={size} value={size}>
-                          {size}
-                        </option>
-                      ))}
-                    </SelectNumber>
-                  </div>
-                </ConfigSection>
-                <ColorSelection>
-                  {NEON_COLORS.map(color => (
-                    <ColorButton
-                      key={color.value}
-                      color={color.value}
-                      selected={texts.find(text => text.id === selectedTextId)?.color === color.value}
-                      onClick={() => handleColorChange(selectedTextId, color.value)}
-                    />
-                  ))}
-                </ColorSelection>
-              </div>
-            )}
-            <Button onClick={addText}>Agregar Nuevo Texto</Button>
-          </ConfigSection>
-        )}
-        
-        {contentType === 'image' && (
-          <ConfigSection>
-            <ImageCarousel>
-              {uploadedImages.length < 4 && (
-                <UploadButton>
-                  <input type="file" onChange={handleImageUpload} accept="image/*" />
-                  <PlusIcon>+</PlusIcon>
-                </UploadButton>
-              )}
-              {uploadedImages.map((img, index) => (
-                <ThumbnailWrapper key={index}>
-                  <Thumbnail
-                    src={img}
-                    alt={`Uploaded ${index + 1}`}
-                    onClick={() => setUploadedImageSrc(img)}
-                    selected={uploadedImageSrc === img}
-                  />
-                  <DeleteButton onClick={() => handleDeleteImage(index)}>
-                    X
-                  </DeleteButton>
-                </ThumbnailWrapper>
-              ))}
-            </ImageCarousel>
+      <Column >
+        {changeForm ? (
+          <PurchaseForm />
+        ) : (
+          <>
             <ConfigSection>
-              <Label title={'DESCRIPCIÓN'} />
-              <TextArea
-                placeholder="Añade una descripción..."
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
+              <Label title={'SVG - TEXTO'} />
+              <RadioButtons
+                options={contentTypeOptions}
+                name="contentType"
+                onChange={handleContentTypeChange}
               />
             </ConfigSection>
-          </ConfigSection>
+            {contentType === 'text' && (
+              <ConfigSection>
+                {/* Mostrar los inputs para el texto seleccionado */}
+                {selectedTextId && (
+                  <div>
+                    <Label title={'ESCRIBE TU TEXTO'} />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <StyledInput
+                        type="text"
+                        //placeholder="Escribe tu texto..."
+                        value={texts.find(text => text.id === selectedTextId)?.text || ''}
+                        onChange={(e) => handleTextChange(selectedTextId, e.target.value)}
+                        style={{ // Permite que el input ocupe el espacio restante
+                          height: '44px', // Asegura que la altura coincida con el botón
+                        }}
+
+                      />
+                      <ButtonEliminarTexto onClick={() => handleDeleteText(selectedTextId)}>
+                        Eliminar Texto
+                      </ButtonEliminarTexto>
+                    </div>
+                    <ConfigSection>
+                      <Label title={'SELECCIONAR FUENTE'} />
+                      <SelectFont
+                        onChange={(e) => handleFontChange(selectedTextId, e.target.value)}
+                        value={texts.find(text => text.id === selectedTextId)?.fontFamily || NEON_FONTS[0].value}
+                        style={{ fontFamily: texts.find(text => text.id === selectedTextId)?.fontFamily }}
+                      >
+                        {NEON_FONTS.map(font => (
+                          <option
+                            key={font.value}
+                            value={font.value}
+                            style={{ fontFamily: font.value }}
+                          >
+                            {font.label}
+                          </option>
+                        ))}
+                      </SelectFont>
+                    </ConfigSection>
+                    <ConfigSection>
+                      <Label title={'TAMAÑO DE FUENTE'} />
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        {/* Campo de entrada manual */}
+                        <StyledInput
+                          type="number"
+                          min="8"
+                          max="100"
+                          step="1"
+                          value={texts.find(text => text.id === selectedTextId)?.fontSize || 40}
+                          onChange={(e) => handleFontSizeChange(selectedTextId, parseInt(e.target.value, 10))}
+                          style={{ width: '60px' }}
+                        />
+
+                        {/* Selector de valores comunes */}
+                        <SelectNumber
+                          value={texts.find(text => text.id === selectedTextId)?.fontSize || ''}
+                          onChange={(e) => handleFontSizeChange(selectedTextId, parseInt(e.target.value, 10))}
+                        >
+                          <option value="">Seleccionar</option>
+                          {FONT_SIZES.map(size => (
+                            <option key={size} value={size}>
+                              {size}
+                            </option>
+                          ))}
+                        </SelectNumber>
+                      </div>
+                    </ConfigSection>
+                    <ColorSelection>
+                      {NEON_COLORS.map(color => (
+                        <ColorButton
+                          key={color.value}
+                          color={color.value}
+                          selected={texts.find(text => text.id === selectedTextId)?.color === color.value}
+                          onClick={() => handleColorChange(selectedTextId, color.value)}
+                        />
+                      ))}
+                    </ColorSelection>
+                  </div>
+                )}
+                <Button onClick={addText}>Agregar Nuevo Texto</Button>
+              </ConfigSection>
+            )}
+
+            {contentType === 'image' && (
+              <ConfigSection>
+                <ImageCarousel>
+                  {uploadedImages.length < 4 && (
+                    <UploadButton>
+                      <input type="file" onChange={handleImageUpload} accept="image/*" />
+                      <PlusIcon>+</PlusIcon>
+                    </UploadButton>
+                  )}
+                  {uploadedImages.map((img, index) => (
+                    <ThumbnailWrapper key={index}>
+                      <Thumbnail
+                        src={img}
+                        alt={`Uploaded ${index + 1}`}
+                        onClick={() => setUploadedImageSrc(img)}
+                        selected={uploadedImageSrc === img}
+                      />
+                      <DeleteButton onClick={() => handleDeleteImage(index)}>
+                        X
+                      </DeleteButton>
+                    </ThumbnailWrapper>
+                  ))}
+                </ImageCarousel>
+                <ConfigSection>
+                  <Label title={'DESCRIPCIÓN'} />
+                  <TextArea
+                    placeholder="Añade una descripción..."
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                  />
+                </ConfigSection>
+              </ConfigSection>
+            )}
+            {/* Resto de las configuraciones */}
+            <ConfigSection>
+              <Label title={'TAMAÑO'} />
+              <Groups>
+                <StyledInput
+                  type="text"
+                  placeholder="Ancho"
+                />
+                <StyledInput
+                  type="text"
+                  placeholder="Alto"
+                />
+              </Groups>
+            </ConfigSection>
+            <ConfigSection>
+              <Label title={'RECORTE'} />
+              <RadioButtons
+                options={cutOptions}
+                name="cutOptions"
+              />
+            </ConfigSection>
+            <ConfigSection>
+              <Label title={'SOPORTE'} />
+              <RadioButtons
+                options={suportOptions}
+                name="suportOptions"
+              />
+            </ConfigSection>
+            <ConfigSection>
+              <Label title={'USO'} />
+              <RadioButtons
+                options={useOptions}
+                name="useOptions"
+              />
+            </ConfigSection>
+            <Button onClick={() => setChangeForm(true)}>¡Comprar Ya!</Button>
+          </>
         )}
-        {/* Resto de las configuraciones */}
-        <ConfigSection>
-          <Label title={'TAMAÑO'} />
-          <Groups>
-            <StyledInput
-              type="text"
-              placeholder="Ancho"
-            />
-            <StyledInput
-              type="text"
-              placeholder="Alto"
-            />
-          </Groups>
-        </ConfigSection>
-        <ConfigSection>
-          <Label title={'RECORTE'} />
-          <RadioButtons
-            options={cutOptions}
-            name="cutOptions"
-          />
-        </ConfigSection>
-        <ConfigSection>
-          <Label title={'SOPORTE'} />
-          <RadioButtons
-            options={suportOptions}
-            name="suportOptions"
-          />
-        </ConfigSection>
-        <ConfigSection>
-          <Label title={'USO'} />
-          <RadioButtons
-            options={useOptions}
-            name="useOptions"
-          />
-        </ConfigSection>
-        <Button>¡Comprar Ya!</Button>
       </Column>
     </Container>
   );

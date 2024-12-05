@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
 // Estilos con styled-components
 export const Container = styled.div`
@@ -7,11 +7,27 @@ export const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
   font-family: Arial, sans-serif;
+  height: 90vh;
 `;
 
 export const Column = styled.div`
   flex: 1;
   padding: 20px;
+  height: auto;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 50px;
+  }
+
+  &::-webkit-scrollbar-button {
+    display: none;
+  }
 `;
 
 export const ConfigSection = styled.div`
@@ -46,7 +62,7 @@ export const SliderContainer = styled.div`
 
   .slick-slide {
     padding: 0 5px;
-    
+
     & > div {
       display: flex;
       justify-content: center;
@@ -73,7 +89,7 @@ export const DeleteButton = styled.button`
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background-color: #E30613;
+  background-color: #e30613;
   border: none;
   color: white;
   display: flex;
@@ -101,7 +117,8 @@ export const Thumbnail = styled.img`
   height: 80px;
   object-fit: cover;
   cursor: pointer;
-  border: ${props => (props.selected ? "2px solid #BC13FE" : "2px solid transparent")};
+  border: ${(props) =>
+    props.selected ? "2px solid #BC13FE" : "2px solid transparent"};
   border-radius: 5px;
   transition: border-color 0.3s;
 `;
@@ -128,19 +145,19 @@ export const PlusIcon = styled.span`
 `;
 
 export const Button = styled.button`
-  background-color: #E30613;
+  background-color: #e30613;
   width: 100%;
   height: 50px;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  margin-Bottom: 10px;
-  margin-Top: 10px
+  margin-bottom: 10px;
+  margin-top: 10px;
 `;
 
 export const ButtonEliminarTexto = styled.button`
-  background-color: #E30613;
+  background-color: #e30613;
   width: 50%;
   height: 44px;
   margin-top: 10px;
@@ -148,7 +165,7 @@ export const ButtonEliminarTexto = styled.button`
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  margin-Top: 10px
+  margin-top: 10px;
 `;
 
 export const StyledInput = styled.input`
@@ -165,7 +182,7 @@ export const StyledInput = styled.input`
   height: 44px;
   outline: none;
   &:focus {
-    border-color: #E30613;
+    border-color: #e30613;
   }
 `;
 
@@ -182,11 +199,9 @@ export const TextArea = styled.textarea`
   font-size: 20px;
 
   &:focus {
-    border-color: #E30613;
+    border-color: #e30613;
   }
 `;
-
-
 
 export const SelectFont = styled.select`
   width: 100%;
@@ -218,7 +233,7 @@ export const SelectNumber = styled.select`
   cursor: pointer;
   font-size: 17px;
   color: #666666;
-  
+
   option {
     padding: 10px;
     font-size: 16px;
@@ -229,7 +244,7 @@ export const ColorSelection = styled.div`
   display: flex;
   gap: 10px;
   margin-top: 10px;
-  marginBottom: 20px;
+  marginbottom: 20px;
 `;
 
 export const ColorButton = styled.button`
@@ -237,33 +252,32 @@ export const ColorButton = styled.button`
   height: 40px;
   margin-bottom: 20px;
   border-radius: 50%;
-  border: ${props =>
-    props.color === '#ffffff' // Si el color es blanco
+  border: ${(props) =>
+    props.color === "#ffffff" // Si el color es blanco
       ? props.selected
-        ? '3px solid #000000' // Borde negro más grueso cuando está seleccionado
-        : '1px solid #000000' // Borde negro más delgado cuando no está seleccionado
+        ? "3px solid #000000" // Borde negro más grueso cuando está seleccionado
+        : "1px solid #000000" // Borde negro más delgado cuando no está seleccionado
       : props.selected
-      ? '3px solid #ffffff'   // Borde blanco para otros colores seleccionados
-      : '3px solid transparent'}; // Sin borde para otros colores no seleccionados
-  background-color: ${props => props.color};
+      ? "3px solid #ffffff" // Borde blanco para otros colores seleccionados
+      : "3px solid transparent"}; // Sin borde para otros colores no seleccionados
+  background-color: ${(props) => props.color};
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: ${props =>
+  box-shadow: ${(props) =>
     props.selected
-      ? props.color === '#ffffff' // Si el color es blanco
-        ? `0 0 15px #000000`      // Sombra negra
+      ? props.color === "#ffffff" // Si el color es blanco
+        ? `0 0 15px #000000` // Sombra negra
         : `0 0 15px ${props.color}` // Sombra del color seleccionado
-      : 'none'};
+      : "none"};
 
   &:hover {
-    box-shadow: ${props =>
-      props.color === '#ffffff' // Si el color es blanco
-        ? `0 0 15px #000000`    // Sombra negra
+    box-shadow: ${(props) =>
+      props.color === "#ffffff" // Si el color es blanco
+        ? `0 0 15px #000000` // Sombra negra
         : `0 0 15px ${props.color}`}; // Sombra del color al pasar el mouse
     transform: scale(1.1);
   }
 `;
-
 
 export const ImageCarousel = styled.div`
   display: flex;
@@ -271,4 +285,3 @@ export const ImageCarousel = styled.div`
   overflow-x: auto;
   padding: 10px 0;
 `;
-
